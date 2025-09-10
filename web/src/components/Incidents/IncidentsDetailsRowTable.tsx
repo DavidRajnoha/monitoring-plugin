@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { getRuleUrl, usePerspective } from '../hooks/usePerspective';
 import './incidents-styles.css';
 import { SeverityBadge } from '../alerting/AlertUtils';
+import { DataTestIDs } from '../data-test';
 
 const IncidentsDetailsRowTable = ({ alerts }) => {
   const [namespace] = useActiveNamespace();
@@ -20,7 +21,7 @@ const IncidentsDetailsRowTable = ({ alerts }) => {
   const { t } = useTranslation(process.env.I18N_NAMESPACE);
 
   return (
-    <Table borders={false} variant="compact">
+    <Table borders={false} variant="compact" data-test={DataTestIDs.IncidentsDetailsTable.Table}>
       <Thead>
         <Tr>
           <Th width={25}>{t('Alert Rule')}</Th>
@@ -34,23 +35,43 @@ const IncidentsDetailsRowTable = ({ alerts }) => {
       <Tbody>
         {!alerts ? (
           <Bullseye>
-            <Spinner aria-label="incidents-chart-spinner" />
+            <Spinner
+              aria-label="incidents-chart-spinner"
+              data-test={DataTestIDs.IncidentsDetailsTable.LoadingSpinner}
+            />
           </Bullseye>
         ) : (
           alerts?.map((alertDetails, rowIndex) => {
             return (
-              <Tr key={rowIndex}>
-                <Td dataLabel="expanded-details-alertname">
+              <Tr key={rowIndex} data-test={`${DataTestIDs.IncidentsDetailsTable.Row}-${rowIndex}`}>
+                <Td
+                  dataLabel="expanded-details-alertname"
+                  data-test={`${DataTestIDs.IncidentsDetailsTable.AlertRuleCell}-${rowIndex}`}
+                >
                   <ResourceIcon kind={RuleResource.kind} />
-                  <Link to={getRuleUrl(perspective, alertDetails?.rule, namespace)}>
+                  <Link
+                    to={getRuleUrl(perspective, alertDetails?.rule, namespace)}
+                    data-test={`${DataTestIDs.IncidentsDetailsTable.AlertRuleLink}-${rowIndex}`}
+                  >
                     {alertDetails.alertname}
                   </Link>
                 </Td>
-                <Td dataLabel="expanded-details-namespace">{alertDetails.namespace || '---'}</Td>
-                <Td dataLabel="expanded-details-severity">
+                <Td
+                  dataLabel="expanded-details-namespace"
+                  data-test={`${DataTestIDs.IncidentsDetailsTable.NamespaceCell}-${rowIndex}`}
+                >
+                  {alertDetails.namespace || '---'}
+                </Td>
+                <Td
+                  dataLabel="expanded-details-severity"
+                  data-test={`${DataTestIDs.IncidentsDetailsTable.SeverityCell}-${rowIndex}`}
+                >
                   <SeverityBadge severity={alertDetails.severity} />
                 </Td>
-                <Td dataLabel="expanded-details-alertstate">
+                <Td
+                  dataLabel="expanded-details-alertstate"
+                  data-test={`${DataTestIDs.IncidentsDetailsTable.StateCell}-${rowIndex}`}
+                >
                   {!alertDetails.resolved ? (
                     <>
                       <BellIcon />
@@ -63,10 +84,16 @@ const IncidentsDetailsRowTable = ({ alerts }) => {
                     </>
                   )}
                 </Td>
-                <Td dataLabel="expanded-details-firingstart">
+                <Td
+                  dataLabel="expanded-details-firingstart"
+                  data-test={`${DataTestIDs.IncidentsDetailsTable.StartCell}-${rowIndex}`}
+                >
                   <Timestamp simple={true} timestamp={alertDetails.alertsStartFiring} />
                 </Td>
-                <Td dataLabel="expanded-details-firingend">
+                <Td
+                  dataLabel="expanded-details-firingend"
+                  data-test={`${DataTestIDs.IncidentsDetailsTable.EndCell}-${rowIndex}`}
+                >
                   {!alertDetails.resolved ? (
                     '---'
                   ) : (

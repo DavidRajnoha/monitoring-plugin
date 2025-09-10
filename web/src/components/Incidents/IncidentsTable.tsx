@@ -9,6 +9,7 @@ import { MonitoringState } from 'src/reducers/observe';
 import { AlertStateIcon, SeverityBadge } from '../alerting/AlertUtils';
 import IncidentsDetailsRowTable from './IncidentsDetailsRowTable';
 import { Alert } from './model';
+import { DataTestIDs } from '../data-test';
 
 export const IncidentsTable = () => {
   const columnNames = {
@@ -53,7 +54,7 @@ export const IncidentsTable = () => {
   return (
     <Card>
       <CardBody>
-        <Table aria-label="alerts-table" isExpandable>
+        <Table aria-label="alerts-table" isExpandable data-test={DataTestIDs.IncidentsTable.Table}>
           <Thead>
             <Tr>
               <Th screenReaderText="Row expansion" />
@@ -64,7 +65,11 @@ export const IncidentsTable = () => {
           </Thead>
           {alertsTableData.map((alert, rowIndex) => {
             return (
-              <Tbody key={rowIndex} isExpanded={isAlertExpanded(alert)}>
+              <Tbody
+                key={rowIndex}
+                isExpanded={isAlertExpanded(alert)}
+                data-test={`${DataTestIDs.IncidentsTable.Row}-${rowIndex}`}
+              >
                 <Tr>
                   <Td
                     expand={
@@ -77,9 +82,15 @@ export const IncidentsTable = () => {
                           }
                         : undefined
                     }
+                    data-test={`${DataTestIDs.IncidentsTable.ExpandButton}-${rowIndex}`}
                   />
-                  <Td dataLabel={columnNames.component}>{alert.component}</Td>
-                  <Td>
+                  <Td
+                    dataLabel={columnNames.component}
+                    data-test={`${DataTestIDs.IncidentsTable.ComponentCell}-${rowIndex}`}
+                  >
+                    {alert.component}
+                  </Td>
+                  <Td data-test={`${DataTestIDs.IncidentsTable.SeverityCell}-${rowIndex}`}>
                     {alert.critical > 0 && (
                       <SeverityBadge severity={AlertSeverity.Critical} count={alert.critical} />
                     )}
@@ -90,7 +101,10 @@ export const IncidentsTable = () => {
                       <SeverityBadge severity={AlertSeverity.Info} count={alert.info} />
                     )}
                   </Td>
-                  <Td dataLabel={columnNames.state}>
+                  <Td
+                    dataLabel={columnNames.state}
+                    data-test={`${DataTestIDs.IncidentsTable.StateCell}-${rowIndex}`}
+                  >
                     <AlertStateIcon
                       state={
                         alert.alertstate === 'resolved' ? AlertStates.Silenced : AlertStates.Firing

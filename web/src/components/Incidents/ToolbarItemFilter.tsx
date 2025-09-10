@@ -9,6 +9,7 @@ import {
   Badge,
 } from '@patternfly/react-core';
 import { getFilterKey } from './utils';
+import { DataTestIDs } from '../data-test';
 
 interface IncidentFilterToolbarItemProps {
   categoryName: string;
@@ -72,11 +73,13 @@ const IncidentFilterToolbarItem: React.FC<IncidentFilterToolbarItemProps> = ({
           onDeleteGroupIncidentFilterChip(incidentsActiveFilters, dispatch, category)
         }
         categoryName={categoryName}
+        data-test={`${DataTestIDs.IncidentsPage.FilterChip}-${categoryName.toLowerCase()}`}
       >
         <Select
           id={`${categoryName}-select`.toLowerCase()}
           role="menu"
           aria-label="Filters"
+          data-test={`${DataTestIDs.IncidentsPage.FiltersSelect}-${categoryName.toLowerCase()}`}
           isOpen={incidentFilterIsExpanded}
           selected={incidentsActiveFilters[getFilterKey(categoryName)]}
           onSelect={(event, selection) => {
@@ -96,6 +99,9 @@ const IncidentFilterToolbarItem: React.FC<IncidentFilterToolbarItemProps> = ({
               ref={toggleRef}
               onClick={onIncidentFilterToggle}
               isExpanded={incidentFilterIsExpanded}
+              data-test={`${
+                DataTestIDs.IncidentsPage.FiltersSelectToggle
+              }-${categoryName.toLowerCase()}`}
               badge={
                 Object.entries(incidentsActiveFilters?.[getFilterKey(categoryName)] || {}).length >
                 0 ? (
@@ -110,7 +116,11 @@ const IncidentFilterToolbarItem: React.FC<IncidentFilterToolbarItemProps> = ({
           )}
           shouldFocusToggleOnSelect
         >
-          <SelectList>
+          <SelectList
+            data-test={`${
+              DataTestIDs.IncidentsPage.FiltersSelectList
+            }-${categoryName.toLowerCase()}`}
+          >
             {options.map((option) => (
               <SelectOption
                 key={option.value}
@@ -120,6 +130,9 @@ const IncidentFilterToolbarItem: React.FC<IncidentFilterToolbarItemProps> = ({
                 )}
                 description={option?.description}
                 hasCheckbox={categoryName === 'Incident ID' ? false : true}
+                data-test={`${
+                  DataTestIDs.IncidentsPage.FiltersSelectOption
+                }-${categoryName.toLowerCase()}-${option.value.toLowerCase()}`}
               >
                 {option.value}
               </SelectOption>

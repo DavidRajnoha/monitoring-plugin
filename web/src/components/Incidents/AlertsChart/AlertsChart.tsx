@@ -27,6 +27,7 @@ import { setAlertsAreLoading } from '../../../actions/observe';
 import { MonitoringState } from '../../../reducers/observe';
 import { IncidentsTooltip } from '../IncidentsTooltip';
 import { createAlertsChartBars, formatDate, generateDateArray } from '../utils';
+import { DataTestIDs } from '../../data-test';
 
 const AlertsChart = ({ chartDays, theme }: { chartDays: number; theme: 'light' | 'dark' }) => {
   const dispatch = useDispatch();
@@ -79,15 +80,20 @@ const AlertsChart = ({ chartDays, theme }: { chartDays: number; theme: 'light' |
   }, [handleResize]);
 
   return (
-    <Card className="alerts-chart-card" style={{ overflow: 'visible' }}>
-      <div ref={containerRef}>
-        <CardTitle>Alerts Timeline</CardTitle>
+    <Card
+      className="alerts-chart-card"
+      style={{ overflow: 'visible' }}
+      data-test={DataTestIDs.AlertsChart.Card}
+    >
+      <div ref={containerRef} data-test={DataTestIDs.AlertsChart.ChartContainer}>
+        <CardTitle data-test={DataTestIDs.AlertsChart.Title}>Alerts Timeline</CardTitle>
         {alertsAreLoading ? (
           <EmptyState
             variant="lg"
             style={{
               height: '250px',
             }}
+            data-test={DataTestIDs.AlertsChart.EmptyState}
           >
             <EmptyStateBody>Select an incident in the chart above to see alerts.</EmptyStateBody>
           </EmptyState>

@@ -62,6 +62,7 @@ import { Incident, IncidentsPageFiltersExpandedState } from './model';
 import { useAlertsPoller } from '../hooks/useAlertsPoller';
 import { Rule } from '@openshift-console/dynamic-plugin-sdk';
 import IncidentFilterToolbarItem, { severityOptions, stateOptions } from './ToolbarItemFilter';
+import { DataTestIDs } from '../data-test';
 
 const IncidentsPage = () => {
   const { t } = useTranslation(process.env.I18N_NAMESPACE);
@@ -325,12 +326,16 @@ const IncidentsPage = () => {
       <PageSection hasBodyWrapper={false}>
         {alertsAreLoading && incidentsAreLoading ? (
           <Bullseye>
-            <Spinner aria-label="incidents-chart-spinner" />
+            <Spinner
+              aria-label="incidents-chart-spinner"
+              data-test={DataTestIDs.IncidentsPage.LoadingSpinner}
+            />
           </Bullseye>
         ) : (
           <PageSection hasBodyWrapper={false} className="incidents-page-main-section">
             <Toolbar
               id="toolbar-with-filter"
+              data-test={DataTestIDs.IncidentsPage.Toolbar}
               collapseListedFiltersBreakpoint="xl"
               clearAllFilters={() => {
                 dispatch(
@@ -351,6 +356,7 @@ const IncidentsPage = () => {
                   <ToolbarItem>
                     <Select
                       aria-label="Filter type selection"
+                      data-test={DataTestIDs.IncidentsPage.FiltersSelect}
                       isOpen={filterTypeExpanded.filterType}
                       role="menu"
                       selected={incidentPageFilterTypeSelected}
@@ -368,30 +374,36 @@ const IncidentsPage = () => {
                           onClick={(ev) => onFilterToggle(ev, 'filterType', setFilterTypeExpanded)}
                           isExpanded={filterTypeExpanded.filterType}
                           icon={<FilterIcon />}
+                          data-test={DataTestIDs.IncidentsPage.FiltersSelectToggle}
                         >
                           {incidentPageFilterTypeSelected}
                         </MenuToggle>
                       )}
                       style={{ width: '145px' }}
                     >
-                      <SelectOption
-                        value="Severity"
-                        isSelected={incidentPageFilterTypeSelected?.includes('Severity')}
-                      >
-                        Severity
-                      </SelectOption>
-                      <SelectOption
-                        value="State"
-                        isSelected={incidentPageFilterTypeSelected?.includes('State')}
-                      >
-                        State
-                      </SelectOption>
-                      <SelectOption
-                        value="Incident ID"
-                        isSelected={incidentPageFilterTypeSelected?.includes('Incident ID')}
-                      >
-                        Incident ID
-                      </SelectOption>
+                      <SelectList data-test={DataTestIDs.IncidentsPage.FiltersSelectList}>
+                        <SelectOption
+                          value="Severity"
+                          isSelected={incidentPageFilterTypeSelected?.includes('Severity')}
+                          data-test={`${DataTestIDs.IncidentsPage.FiltersSelectOption}-severity`}
+                        >
+                          Severity
+                        </SelectOption>
+                        <SelectOption
+                          value="State"
+                          isSelected={incidentPageFilterTypeSelected?.includes('State')}
+                          data-test={`${DataTestIDs.IncidentsPage.FiltersSelectOption}-state`}
+                        >
+                          State
+                        </SelectOption>
+                        <SelectOption
+                          value="Incident ID"
+                          isSelected={incidentPageFilterTypeSelected?.includes('Incident ID')}
+                          data-test={`${DataTestIDs.IncidentsPage.FiltersSelectOption}-incident-id`}
+                        >
+                          Incident ID
+                        </SelectOption>
+                      </SelectList>
                     </Select>
                   </ToolbarItem>
                   <ToolbarItem
@@ -466,6 +478,7 @@ const IncidentsPage = () => {
                 <ToolbarItem align={{ default: 'alignEnd' }}>
                   <Select
                     id="time-range-select"
+                    data-test={DataTestIDs.IncidentsPage.DaysSelect}
                     isOpen={daysFilterIsExpanded}
                     selected={incidentsActiveFilters.days[0]}
                     onSelect={onSelect}
@@ -475,17 +488,38 @@ const IncidentsPage = () => {
                         ref={toggleRef}
                         onClick={onToggleClick}
                         isExpanded={daysFilterIsExpanded}
+                        data-test={DataTestIDs.IncidentsPage.DaysSelectToggle}
                       >
                         {`Last ${incidentsActiveFilters.days[0]}`}
                       </MenuToggle>
                     )}
                     shouldFocusToggleOnSelect
                   >
-                    <SelectList>
-                      <SelectOption value="1 day">{t('Last 1 day')}</SelectOption>
-                      <SelectOption value="3 days">{t('Last 3 days')}</SelectOption>
-                      <SelectOption value="7 days">{t('Last 7 days')}</SelectOption>
-                      <SelectOption value="15 days">{t('Last 15 days')}</SelectOption>
+                    <SelectList data-test={DataTestIDs.IncidentsPage.DaysSelectList}>
+                      <SelectOption
+                        value="1 day"
+                        data-test={`${DataTestIDs.IncidentsPage.DaysSelectOption}-1-day`}
+                      >
+                        {t('Last 1 day')}
+                      </SelectOption>
+                      <SelectOption
+                        value="3 days"
+                        data-test={`${DataTestIDs.IncidentsPage.DaysSelectOption}-3-days`}
+                      >
+                        {t('Last 3 days')}
+                      </SelectOption>
+                      <SelectOption
+                        value="7 days"
+                        data-test={`${DataTestIDs.IncidentsPage.DaysSelectOption}-7-days`}
+                      >
+                        {t('Last 7 days')}
+                      </SelectOption>
+                      <SelectOption
+                        value="15 days"
+                        data-test={`${DataTestIDs.IncidentsPage.DaysSelectOption}-15-days`}
+                      >
+                        {t('Last 15 days')}
+                      </SelectOption>
                     </SelectList>
                   </Select>
                 </ToolbarItem>
@@ -499,6 +533,7 @@ const IncidentsPage = () => {
                       variant="link"
                       icon={hideCharts ? <CompressArrowsAltIcon /> : <CompressIcon />}
                       onClick={() => setHideCharts(!hideCharts)}
+                      data-test={DataTestIDs.IncidentsPage.ToggleChartsButton}
                     >
                       <span>{hideCharts ? t('Show graph') : t('Hide graph')}</span>
                     </Button>
