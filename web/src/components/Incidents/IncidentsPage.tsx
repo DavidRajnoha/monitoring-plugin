@@ -82,8 +82,8 @@ const IncidentsPage = () => {
   // default value so it won't be undefined when first rendering.
   // Potentially load value from incidentsInitialState.days[0] 
   // (has to change order in this function)
-  const [daysSpan, setDaysSpan] = useState<number>(7 * 24 * 60 * 60 * 1000); // 7 days = 604800000ms
-  // const [daysSpan, setDaysSpan] = useState<number>(6 * 24 * 60 * 60 * 1000); // 7 days = 604800000ms
+  // const [daysSpan, setDaysSpan] = useState<number>(7 * 24 * 60 * 60 * 1000); // 7 days = 604800000ms
+  const [daysSpan, setDaysSpan] = useState<number>(); // 7 days = 604800000ms
 
   const [timeRanges, setTimeRanges] = useState([]);
   // data that is used for processing to serve it to the alerts table and chart
@@ -208,26 +208,43 @@ const IncidentsPage = () => {
   const safeFetch = useSafeFetch();
   const title = t('Incidents');
 
+  // Ensure filters -> daysSpan runs before daysSpan -> timeRanges
+  useEffect(() => {
+    console.log('🟧 EFFECT 4: Days filter changed to:', incidentsActiveFilters.days);
+    console.log('🟧 Days length:', incidentsActiveFilters.days.length);
+
+    const days = incidentsActiveFilters.days;
+    if (!Array.isArray(days) || days.length === 0) {
+      // Do not derive a 0/undefined span when filters are empty
+      console.log('🟧 Days is not an array or is empty, skipping fetch');
+      return;
+    }
+
+    const newDaysSpan = parsePrometheusDuration(days[0].split(' ')[0] + 'd');
+    console.log('🟧 Calculated daysSpan:', newDaysSpan);
+
+    // Avoid redundant updates and falsy values
+    if (!newDaysSpan || newDaysSpan === daysSpan) {
+      console.log('🟧 DaysSpan is still undefined or the same, skipping fetch');
+      return;
+    }
+
+    setDaysSpan(newDaysSpan);
+  }, [incidentsActiveFilters.days]);
+
   useEffect(() => {
     console.log('🟪 EFFECT 5: DaysSpan changed to:', daysSpan);
+
+    if (!daysSpan) {
+      console.log('🟪 EFFECT 5: DaysSpan is still undefined, skipping fetch');
+      return;
+    }
+
     const newTimeRanges = getIncidentsTimeRanges(daysSpan, now);
     console.log('🟪 Calculated timeRanges:', newTimeRanges.length, 'ranges');
     console.log('🟪 TimeRanges details:', newTimeRanges);
     setTimeRanges(newTimeRanges);
   }, [daysSpan]);
-
-  useEffect(() => {
-    console.log('🟧 EFFECT 4: Days filter changed to:', incidentsActiveFilters.days);
-    console.log('🟧 Days length:', incidentsActiveFilters.days.length);
-    
-    const newDaysSpan = parsePrometheusDuration(
-      incidentsActiveFilters.days.length > 0
-        ? incidentsActiveFilters.days[0].split(' ')[0] + 'd'
-        : '',
-    );
-    console.log('🟧 Calculated daysSpan:', newDaysSpan);
-    setDaysSpan(newDaysSpan);
-  }, [incidentsActiveFilters.days]);
 
 
   useEffect(() => {
@@ -275,15 +292,16 @@ const IncidentsPage = () => {
   }, [alertsData, alertingRulesData]);
 
   useEffect(() => {
-    console.log('🔴 EFFECT 6: TimeRanges changed, count:', timeRanges.length);
-    console.log('🔴 ✅ Fetching incidents data for', timeRanges.length, 'ranges');
-    console.log('🔴 TimeRanges:', timeRanges);
-
     if (!Array.isArray(timeRanges) || timeRanges.length === 0) {
       // First pass after mount: timeRanges is still initial []
       // Do NOT fetch and do NOT clear incidents here
+      console.log('🔴 EFFECT 6: TimeRanges is still initial [], skipping fetch');
       return;
     }
+
+    console.log('🔴 EFFECT 6: TimeRanges changed, count:', timeRanges.length);
+    console.log('🔴 TimeRanges:', timeRanges);
+
     
     (async () => {
       Promise.all(
