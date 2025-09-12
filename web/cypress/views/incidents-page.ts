@@ -62,6 +62,8 @@ export const incidentsPage = {
         const fillOpacity = Cypress.$(element).css('fill-opacity') || Cypress.$(element).attr('fill-opacity');
         return parseFloat(fillOpacity || '0') > 0;
             }),
+    incidentsChartBarsGroups: () => cy.byTestID(DataTestIDs.IncidentsChart.ChartBars)
+      .find('g[role="presentation"][data-test*="incidents-chart-bar-"]'),
       incidentsChartSvg: () => incidentsPage.elements.incidentsChartCard().find('svg'),
       
       alertsChartTitle: () => cy.byTestID(DataTestIDs.AlertsChart.Title),

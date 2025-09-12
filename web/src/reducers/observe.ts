@@ -97,7 +97,7 @@ export default (state: ObserveState, action: ObserveAction): ObserveState => {
           groupId: [],
         },
         incidentsActiveFilters: {
-          days: [],
+          days: ['7 days'],
           severity: [],
           state: [],
           groupId: [],

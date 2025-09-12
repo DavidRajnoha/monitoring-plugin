@@ -69,6 +69,8 @@ const IncidentsPage = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const urlParams = useMemo(() => parseUrlParams(location.search), [location.search]);
+  
+  console.log('🚀 COMPONENT RENDER: urlParams:', urlParams);
   const { perspective, rulesKey } = usePerspective();
   useAlertsPoller();
   const { theme } = usePatternFlyTheme();
@@ -77,7 +79,12 @@ const IncidentsPage = () => {
   // days span is where we store the value for creating time ranges for
   // fetch incidents/alerts based on the length of time ranges
   // when days filter changes we set a new days span -> calculate new time range and fetch new data
-  const [daysSpan, setDaysSpan] = useState<number>();
+  // default value so it won't be undefined when first rendering.
+  // Potentially load value from incidentsInitialState.days[0] 
+  // (has to change order in this function)
+  const [daysSpan, setDaysSpan] = useState<number>(7 * 24 * 60 * 60 * 1000); // 7 days = 604800000ms
+  // const [daysSpan, setDaysSpan] = useState<number>(6 * 24 * 60 * 60 * 1000); // 7 days = 604800000ms
+
   const [timeRanges, setTimeRanges] = useState([]);
   // data that is used for processing to serve it to the alerts table and chart
   const [incidentForAlertProcessing, setIncidentForAlertProcessing] = useState<
@@ -125,6 +132,9 @@ const IncidentsPage = () => {
   const incidentsActiveFilters = useSelector((state: MonitoringState) =>
     state.plugins.mcp.getIn(['incidentsData', 'incidentsActiveFilters']),
   );
+  
+  console.log('🚀 REDUX STATE: incidentsActiveFilters from Redux:', incidentsActiveFilters);
+  console.log('🚀 REDUX STATE: incidentsInitialState from Redux:', incidentsInitialState);
   const alertsData = useSelector((state: MonitoringState) =>
     state.plugins.mcp.getIn(['incidentsData', 'alertsData']),
   );
@@ -142,8 +152,10 @@ const IncidentsPage = () => {
 
   const selectedGroupId = incidentsActiveFilters.groupId?.[0] ?? null;
   useEffect(() => {
+    console.log('🟦 EFFECT 1: Initializing filters');
     const hasUrlParams = Object.keys(urlParams).length > 0;
     if (hasUrlParams) {
+      console.log('🟦 Setting from URL params:', urlParams);
       // If URL parameters exist, update incidentsActiveFilters based on them
       dispatch(
         setIncidentsActiveFilters({
@@ -156,6 +168,7 @@ const IncidentsPage = () => {
         }),
       );
     } else {
+      console.log('🟦 Setting from initial state:', incidentsInitialState);
       // If no URL parameters exist, set the URL based on incidentsInitialState
       updateBrowserUrl(incidentsInitialState);
       dispatch(
@@ -169,10 +182,17 @@ const IncidentsPage = () => {
   }, []);
 
   useEffect(() => {
+    console.log('🟨 EFFECT 2: Updating browser URL, filters:', incidentsActiveFilters);
     updateBrowserUrl(incidentsActiveFilters, selectedGroupId);
   }, [incidentsActiveFilters]);
 
   useEffect(() => {
+    console.log('🟩 EFFECT 3: Updating filtered data, incidents count:', incidents?.length || 0);
+    console.log('🟩 Active filters:', {
+      state: incidentsActiveFilters.state,
+      severity: incidentsActiveFilters.severity,
+      groupId: incidentsActiveFilters.groupId
+    });
     dispatch(
       setFilteredIncidentsData({
         filteredIncidentsData: filterIncident(incidentsActiveFilters, incidents),
@@ -189,20 +209,29 @@ const IncidentsPage = () => {
   const title = t('Incidents');
 
   useEffect(() => {
-    setTimeRanges(getIncidentsTimeRanges(daysSpan, now));
+    console.log('🟪 EFFECT 5: DaysSpan changed to:', daysSpan);
+    const newTimeRanges = getIncidentsTimeRanges(daysSpan, now);
+    console.log('🟪 Calculated timeRanges:', newTimeRanges.length, 'ranges');
+    console.log('🟪 TimeRanges details:', newTimeRanges);
+    setTimeRanges(newTimeRanges);
   }, [daysSpan]);
 
   useEffect(() => {
-    setDaysSpan(
-      parsePrometheusDuration(
-        incidentsActiveFilters.days.length > 0
-          ? incidentsActiveFilters.days[0].split(' ')[0] + 'd'
-          : '',
-      ),
+    console.log('🟧 EFFECT 4: Days filter changed to:', incidentsActiveFilters.days);
+    console.log('🟧 Days length:', incidentsActiveFilters.days.length);
+    
+    const newDaysSpan = parsePrometheusDuration(
+      incidentsActiveFilters.days.length > 0
+        ? incidentsActiveFilters.days[0].split(' ')[0] + 'd'
+        : '',
     );
+    console.log('🟧 Calculated daysSpan:', newDaysSpan);
+    setDaysSpan(newDaysSpan);
   }, [incidentsActiveFilters.days]);
 
+
   useEffect(() => {
+    console.log('🟫 EFFECT ALERTS: Fetching alerts data, incidentForAlertProcessing count:', incidentForAlertProcessing.length);
     (async () => {
       Promise.all(
         timeRanges.map(async (range) => {
@@ -217,6 +246,7 @@ const IncidentsPage = () => {
       )
         .then((results) => {
           const aggregatedData = results.flat();
+          console.log('🟫 ALERTS: Fetched', aggregatedData.length, 'alert records');
           dispatch(
             setAlertsData({
               alertsData: processAlerts(aggregatedData, incidentForAlertProcessing),
@@ -225,8 +255,7 @@ const IncidentsPage = () => {
           dispatch(setAlertsAreLoading({ alertsAreLoading: false }));
         })
         .catch((err) => {
-          // eslint-disable-next-line no-console
-          console.log(err);
+          console.log('🟫 ALERTS ERROR:', err);
         });
     })();
   }, [incidentForAlertProcessing]);
@@ -246,6 +275,16 @@ const IncidentsPage = () => {
   }, [alertsData, alertingRulesData]);
 
   useEffect(() => {
+    console.log('🔴 EFFECT 6: TimeRanges changed, count:', timeRanges.length);
+    console.log('🔴 ✅ Fetching incidents data for', timeRanges.length, 'ranges');
+    console.log('🔴 TimeRanges:', timeRanges);
+
+    if (!Array.isArray(timeRanges) || timeRanges.length === 0) {
+      // First pass after mount: timeRanges is still initial []
+      // Do NOT fetch and do NOT clear incidents here
+      return;
+    }
+    
     (async () => {
       Promise.all(
         timeRanges.map(async (range) => {
@@ -260,6 +299,7 @@ const IncidentsPage = () => {
       )
         .then((results) => {
           const aggregatedData = results.flat();
+          console.log('🔴 INCIDENTS: Fetched', aggregatedData.length, 'incident records');
           dispatch(
             setIncidents({
               incidents: processIncidents(aggregatedData),
@@ -276,8 +316,7 @@ const IncidentsPage = () => {
           setIncidentsAreLoading(false);
         })
         .catch((err) => {
-          // eslint-disable-next-line no-console
-          console.log(err);
+          console.log('🔴 INCIDENTS ERROR:', err);
         });
     })();
   }, [timeRanges]);
