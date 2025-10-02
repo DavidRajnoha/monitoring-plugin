@@ -49,7 +49,7 @@ const AlertsChart = ({ theme }: { theme: 'light' | 'dark' }) => {
   const incidentsActiveFilters = useSelector(
     (state: MonitoringState) => state.plugins.mcp.incidentsData.incidentsActiveFilters,
   );
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation(process.env.I18N_NAMESPACE);
   // Use dynamic date range based on actual alerts data instead of fixed chartDays
   const dateValues = useMemo(() => {
     if (!Array.isArray(alertsData) || alertsData.length === 0) {
@@ -106,7 +106,7 @@ const AlertsChart = ({ theme }: { theme: 'light' | 'dark' }) => {
       data-test={DataTestIDs.AlertsChart.Card}
     >
       <div ref={containerRef} data-test={DataTestIDs.AlertsChart.ChartContainer}>
-        <CardTitle data-test={DataTestIDs.AlertsChart.Title}>Alerts Timeline</CardTitle>
+        <CardTitle data-test={DataTestIDs.AlertsChart.Title}>{t('Alerts Timeline')}</CardTitle>
         {alertsAreLoading || isEmpty(incidentsActiveFilters.groupId) ? (
           <EmptyState
             variant="lg"
@@ -116,7 +116,7 @@ const AlertsChart = ({ theme }: { theme: 'light' | 'dark' }) => {
             data-test={DataTestIDs.AlertsChart.EmptyState}
           >
             <EmptyStateBody>
-              To view alerts, select an incident from the chart above or from the filters.
+              {t('To view alerts, select an incident from the chart above or from the filters.')}
             </EmptyStateBody>
           </EmptyState>
         ) : (
@@ -144,31 +144,35 @@ const AlertsChart = ({ theme }: { theme: 'light' | 'dark' }) => {
                       ? `${datum.name} (currently silenced)`
                       : datum.name;
 
-                    return `Severity: ${datum.severity}
-                    Alert Name: ${alertName}
-                    Namespace: ${datum.namespace || '---'}
-                    Component: ${datum.component}
-                    Start: ${startDate}
-                    End: ${endDate}`;
+                    const baseTooltip = `${t('Severity')}: ${t(datum.severity)}
+                    ${t('Alert Name')}: ${alertName || '---'}
+                    ${t('Namespace')}: ${datum.namespace || '---'}
+                    ${t('Component')}: ${datum.component}
+                    ${t('Start')}: ${startDate}
+                    ${t('End')}: ${endDate}`;
+
+                    const silencedText = datum.silenced ? `\n${t('Silenced')}: true` : '';
+
+                    return `${baseTooltip}${silencedText}`;
                   }}
                 />
               }
               domainPadding={{ x: [30, 25] }}
               legendData={[
                 {
-                  name: 'Critical',
+                  name: t('Critical'),
                   symbol: {
                     fill: t_global_color_status_danger_default.var,
                   },
                 },
                 {
-                  name: 'Info',
+                  name: t('Info'),
                   symbol: {
                     fill: t_global_color_status_info_default.var,
                   },
                 },
                 {
-                  name: 'Warning',
+                  name: t('Warning'),
                   symbol: {
                     fill: t_global_color_status_warning_default.var,
                   },
