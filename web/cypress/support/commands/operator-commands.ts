@@ -342,7 +342,7 @@ const operatorUtils = {
     });
 
     cy.exec(
-      `sleep 15 && oc wait --for=jsonpath='{.metadata.name}'=health-analyzer --timeout=60s servicemonitor/health-analyzer --namespace=openshift-cluster-observability-operator -n ${MCP.namespace} --timeout=60s --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`,
+      `sleep 15 && oc wait --for=jsonpath='{.metadata.name}'=health-analyzer --timeout=60s servicemonitor/health-analyzer -n ${MCP.namespace} --timeout=60s --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`,
       {
         timeout: readyTimeoutMilliseconds,
         failOnNonZeroExit: true
