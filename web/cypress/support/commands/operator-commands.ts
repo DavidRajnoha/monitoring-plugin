@@ -407,39 +407,39 @@ const operatorUtils = {
 
     cy.log('Delete Monitoring UI Plugin instance.');
     cy.executeAndDelete(
-      `oc delete ${config.kind} ${config.name} --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`,
+      `oc delete ${config.kind} ${config.name} --ignore-not-found --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`,
     );
   
     // Common cleanup steps
     cy.log('Remove openshift-cluster-sample-dashboard instance.');
-    cy.executeAndDelete(`oc delete -f ./cypress/fixtures/coo/openshift-cluster-sample-dashboard.yaml --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`);
+    cy.executeAndDelete(`oc delete -f ./cypress/fixtures/coo/openshift-cluster-sample-dashboard.yaml --ignore-not-found --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`);
 
     cy.log('Remove perses-dashboard-sample instance.');
-    cy.executeAndDelete(`oc delete -f ./cypress/fixtures/coo/perses-dashboard-sample.yaml --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`);
+    cy.executeAndDelete(`oc delete -f ./cypress/fixtures/coo/perses-dashboard-sample.yaml --ignore-not-found --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`);
 
     cy.log('Remove prometheus-overview-variables instance.');
-    cy.executeAndDelete(`oc delete -f ./cypress/fixtures/coo/prometheus-overview-variables.yaml --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`);
+    cy.executeAndDelete(`oc delete -f ./cypress/fixtures/coo/prometheus-overview-variables.yaml --ignore-not-found --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`);
 
     cy.log('Remove thanos-compact-overview-1var instance.');
-    cy.executeAndDelete(`oc delete -f ./cypress/fixtures/coo/thanos-compact-overview-1var.yaml --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`);
+    cy.executeAndDelete(`oc delete -f ./cypress/fixtures/coo/thanos-compact-overview-1var.yaml --ignore-not-found --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`);
 
     cy.log('Remove Thanos Querier instance.');
-    cy.executeAndDelete(`oc delete -f ./cypress/fixtures/coo/thanos-querier-datasource.yaml --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`);
+    cy.executeAndDelete(`oc delete -f ./cypress/fixtures/coo/thanos-querier-datasource.yaml --ignore-not-found --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`);
 
     cy.log('Remove perses-dev namespace');
-    cy.executeAndDelete(`oc delete namespace perses-dev --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`);
+    cy.executeAndDelete(`oc delete namespace perses-dev --ignore-not-found --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`);
 
     // Additional cleanup only when COO is installed
     if (!Cypress.env('SKIP_COO_INSTALL')) {
       cy.log('Remove Cluster Observability Operator namespace');
-      cy.executeAndDelete(`oc delete namespace ${MCP.namespace} --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`);
+      cy.executeAndDelete(`oc delete namespace ${MCP.namespace} --ignore-not-found --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`);
     }
   },
 
   RemoveClusterAdminRole(): void {
     cy.log('Remove cluster-admin role from user.');
     cy.executeAndDelete(
-      `oc adm policy remove-cluster-role-from-user cluster-admin ${Cypress.env('LOGIN_USERNAME')} --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`,
+      `oc adm policy remove-cluster-role-from-user cluster-admin ${Cypress.env('LOGIN_USERNAME')} --ignore-not-found --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`,
     );
   },
 
@@ -513,7 +513,7 @@ Cypress.Commands.add('beforeBlock', (MP: { namespace: string, operatorName: stri
           
           cy.cleanupCOO(MCP, MP);
           // Then set up fresh
-          operatorAuthUtils.loginAndAuthNoSession();
+          // operatorAuthUtils.loginAndAuthNoSession();
           cy.setupCOO(MCP, MP);
           cy.log('Before block COO (session) completed');
         },
@@ -532,7 +532,7 @@ Cypress.Commands.add('beforeBlock', (MP: { namespace: string, operatorName: stri
 
       cy.cleanupCOO(MCP, MP);
 
-      operatorAuthUtils.loginAndAuth();
+      // operatorAuthUtils.loginAndAuth();
       cy.setupCOO(MCP, MP);
       cy.log('Before block COO (no session) completed');
     }
