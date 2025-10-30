@@ -12,7 +12,7 @@ import { incidentsPage } from '../../views/incidents-page';
 import { IncidentDefinition } from '../../support/incidents_prometheus_query_mocks';
 
 const MCP = {
-  namespace: 'openshift-cluster-observability-operator',
+  namespace: 'coo',
   packageName: 'cluster-observability-operator',
   operatorName: 'Cluster Observability Operator',
   config: {
@@ -22,7 +22,7 @@ const MCP = {
 };
 
 const MP = {
-  namespace: 'openshift-monitoring',
+  namespace: 'coo',
   operatorName: 'Cluster Monitoring Operator',
 };
 

@@ -17,7 +17,7 @@ const MCP = {
 };
 
 const MP = {
-  namespace: 'openshift-monitoring',
+  namespace: 'coo',
   operatorName: 'Cluster Monitoring Operator',
 };
 
