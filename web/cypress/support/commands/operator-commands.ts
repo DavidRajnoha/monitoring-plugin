@@ -342,7 +342,7 @@ const operatorUtils = {
     });
 
     cy.exec(
-      `sleep 15 && oc wait --for=jsonpath='{.metadata.name}'=health-analyzer --timeout=60s servicemonitor/health-analyzer -n ${MCP.namespace} --timeout=60s --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`,
+      `sleep 15 && oc wait --for=jsonpath='{.metadata.name}'=health-analyzer --timeout=60s servicemonitor/health-analyzer --namespace=openshift-cluster-observability-operator -n ${MCP.namespace} --timeout=60s --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`,
       {
         timeout: readyTimeoutMilliseconds,
         failOnNonZeroExit: true
@@ -513,7 +513,7 @@ Cypress.Commands.add('beforeBlock', (MP: { namespace: string, operatorName: stri
           
           cy.cleanupCOO(MCP, MP);
           // Then set up fresh
-          // operatorAuthUtils.loginAndAuthNoSession();
+          operatorAuthUtils.loginAndAuthNoSession();
           cy.setupCOO(MCP, MP);
           cy.log('Before block COO (session) completed');
         },
@@ -532,7 +532,7 @@ Cypress.Commands.add('beforeBlock', (MP: { namespace: string, operatorName: stri
 
       cy.cleanupCOO(MCP, MP);
 
-      // operatorAuthUtils.loginAndAuth();
+      operatorAuthUtils.loginAndAuth();
       cy.setupCOO(MCP, MP);
       cy.log('Before block COO (no session) completed');
     }
