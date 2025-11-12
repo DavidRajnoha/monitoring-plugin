@@ -40,6 +40,8 @@ describe('BVT: Incidents - e2e', () => {
     cy.transformMetrics();
     cy.log('1.1 Navigate to Incidents page and clear filters');
     incidentsPage.goTo();
+    
+    
     incidentsPage.clearAllFilters();
     
     const intervalMs = 60_000;

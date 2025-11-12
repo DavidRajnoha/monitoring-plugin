@@ -191,7 +191,7 @@ const operatorUtils = {
         'Operator installed successfully',
       );
       cy.exec(
-        `oc label namespaces ${MCP.namespace} openshift.io/cluster-monitoring=true --overwrite=true --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`,
+        `oc label namespace ${MCP.namespace} openshift.io/cluster-monitoring=true --overwrite=true --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`,
       );
     } else if (Cypress.env('KONFLUX_COO_BUNDLE_IMAGE')) {
       cy.log('KONFLUX_COO_BUNDLE_IMAGE is set. COO operator will be installed from Konflux bundle.');
@@ -203,7 +203,7 @@ const operatorUtils = {
         `oc create namespace ${MCP.namespace} --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`,
       );
       cy.exec(
-        `oc label namespaces ${MCP.namespace} openshift.io/cluster-monitoring=true --overwrite=true --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`,
+        `oc label namespace ${MCP.namespace} openshift.io/cluster-monitoring=true --overwrite=true --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`,
       );
       cy.exec(
         `operator-sdk run bundle --timeout=10m --namespace ${MCP.namespace} ${Cypress.env('KONFLUX_COO_BUNDLE_IMAGE')} --kubeconfig ${Cypress.env('KUBECONFIG_PATH')} --verbose `,
@@ -219,7 +219,7 @@ const operatorUtils = {
         `oc create namespace ${MCP.namespace} --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`,
       );
       cy.exec(
-        `oc label namespaces ${MCP.namespace} openshift.io/cluster-monitoring=true --overwrite=true --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`,
+        `oc label namespace ${MCP.namespace} openshift.io/cluster-monitoring=true --overwrite=true --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`,
       );
       cy.exec(
         `operator-sdk run bundle --timeout=10m --namespace ${MCP.namespace} ${Cypress.env('CUSTOM_COO_BUNDLE_IMAGE')} --kubeconfig ${Cypress.env('KUBECONFIG_PATH')} --verbose `,
@@ -314,7 +314,7 @@ const operatorUtils = {
     cy.exec(`oc apply -f ./cypress/fixtures/coo/thanos-querier-datasource.yaml --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`);
 
     cy.exec(
-      `oc label namespaces ${MCP.namespace} openshift.io/cluster-monitoring=true --overwrite=true --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`,
+      `oc label namespace ${MCP.namespace} openshift.io/cluster-monitoring=true --overwrite=true --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`,
     );
 
     cy.log('Create Monitoring UI Plugin instance.');
@@ -438,7 +438,7 @@ const operatorUtils = {
   RemoveClusterAdminRole(): void {
     cy.log('Remove cluster-admin role from user.');
     cy.executeAndDelete(
-      `oc adm policy remove-cluster-role-from-user cluster-admin ${Cypress.env('LOGIN_USERNAME')} --ignore-not-found --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`,
+      `oc adm policy remove-cluster-role-from-user cluster-admin ${Cypress.env('LOGIN_USERNAME')} --kubeconfig ${Cypress.env('KUBECONFIG_PATH')}`,
     );
   },
 
@@ -559,7 +559,7 @@ Cypress.Commands.add('beforeBlock', (MP: { namespace: string, operatorName: stri
     operatorUtils.setupDashboardsAndPlugins(MCP);
     operatorUtils.setupMonitoringPluginImage(MP);
     operatorUtils.RemoveClusterAdminRole();
-    operatorUtils.collectDebugInfo(MP, MCP);
+    // operatorUtils.collectDebugInfo(MP, MCP);
   });
 
   Cypress.Commands.add('RemoveClusterAdminRole', () => {
