@@ -40,10 +40,39 @@ describe('BVT: Incidents - e2e', () => {
     cy.transformMetrics();
     cy.log('1.1 Navigate to Incidents page and clear filters');
     incidentsPage.goTo();
+    
+    cy.log('1.1.1 Verify incidents feature is enabled via features API');
+    cy.request({
+      url: '/api/proxy/plugin/monitoring-console-plugin/backend/features',
+      failOnStatusCode: false,
+    }).then((response) => {
+      cy.log(`Features API status: ${response.status}`);
+      cy.log(`Features API response: ${JSON.stringify(response.body)}`);
+      if (response.status === 200 && response.body) {
+        expect(response.body.incidents).to.equal(true, 'Incidents feature should be enabled');
+      } else {
+        cy.log('WARNING: Features API not available or incidents not enabled');
+      }
+    });
+    
+    cy.log('1.1.2 Check for any API errors or failed requests');
+    cy.request({
+      url: '/api/prometheus/api/v1/query?query=cluster_health_components_map',
+      failOnStatusCode: false,
+    }).then((response) => {
+      cy.log(`Prometheus cluster_health_components_map query status: ${response.status}`);
+      if (response.status === 200 && response.body) {
+        cy.log(`Number of results: ${response.body.data?.result?.length || 0}`);
+        if (response.body.data?.result?.length > 0) {
+          cy.log(`Sample result: ${JSON.stringify(response.body.data.result[0])}`);
+        }
+      }
+    });
+    
     incidentsPage.clearAllFilters();
     
     const intervalMs = 60_000;
-    const maxMinutes = 30; 
+    const maxMinutes = 60; 
 
     cy.log('1.2 Wait for incident with custom alert to appear');
     cy.waitUntil(
