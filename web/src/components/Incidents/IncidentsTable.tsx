@@ -95,7 +95,10 @@ export const IncidentsTable = () => {
     if (!alert.alertsExpandedRowData || alert.alertsExpandedRowData.length === 0) {
       return 0;
     }
-    return Math.min(...alert.alertsExpandedRowData.map((alertData) => alertData.alertsStartFiring));
+    return alert.alertsExpandedRowData.reduce(
+      (min, alertData) => (alertData.alertsStartFiring < min ? alertData.alertsStartFiring : min),
+      Infinity,
+    );
   };
 
   if (isEmpty(alertsTableData) || alertsAreLoading || isEmpty(incidentsActiveFilters.groupId)) {

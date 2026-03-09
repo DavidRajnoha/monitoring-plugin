@@ -115,7 +115,10 @@ function mergeIncidentsByKey(incidents: Array<Partial<Incident>>): Array<Partial
 
       // Find the latest timestamp in this incident
       if (incident.values && incident.values.length > 0) {
-        const maxTimestamp = Math.max(...incident.values.map((v) => v[0]));
+        const maxTimestamp = incident.values.reduce(
+          (max, v) => (v[0] > max ? v[0] : max),
+          -Infinity,
+        );
         // Update silenced and src_severity if this incident has a more recent timestamp
         if (maxTimestamp > existing.latestTimestamp) {
           existing.latestTimestamp = maxTimestamp;
@@ -127,7 +130,7 @@ function mergeIncidentsByKey(incidents: Array<Partial<Incident>>): Array<Partial
       // New group
       const maxTimestamp =
         incident.values && incident.values.length > 0
-          ? Math.max(...incident.values.map((v) => v[0]))
+          ? incident.values.reduce((max, v) => (v[0] > max ? v[0] : max), -Infinity)
           : -Infinity;
 
       groupedMap.set(key, {
@@ -212,8 +215,8 @@ export function convertToAlerts(
     (incident) => incident.values?.map((value) => value[0]) ?? [],
   );
 
-  const incidentFirstTimestamp = Math.min(...timestamps);
-  const incidentLastTimestamp = Math.max(...timestamps);
+  const incidentFirstTimestamp = timestamps.reduce((min, t) => (t < min ? t : min), Infinity);
+  const incidentLastTimestamp = timestamps.reduce((max, t) => (t > max ? t : max), -Infinity);
 
   // Watchdog is a heartbeat metric, not a real issue
   const validAlerts = prometheusResults.filter((alert) => alert.metric.alertname !== 'Watchdog');

@@ -130,8 +130,14 @@ export function getIncidents(
 
       // Update silenced from the result if it has a more recent or equal timestamp
       if (result.values.length > 0 && existingIncident.values.length > 0) {
-        const resultLatestTimestamp = Math.max(...result.values.map((v) => v[0]));
-        const existingLatestTimestamp = Math.max(...existingIncident.values.map((v) => v[0]));
+        const resultLatestTimestamp = result.values.reduce(
+          (max, v) => (v[0] > max ? v[0] : max),
+          -Infinity,
+        );
+        const existingLatestTimestamp = existingIncident.values.reduce(
+          (max, v) => (v[0] > max ? v[0] : max),
+          -Infinity,
+        );
 
         if (resultLatestTimestamp >= existingLatestTimestamp) {
           existingIncident.metric.silenced = result.metric.silenced;

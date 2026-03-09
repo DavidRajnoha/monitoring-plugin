@@ -161,8 +161,8 @@ export function insertPaddingPointsForChart(
  */
 export function sortByEarliestTimestamp(items: PrometheusResult[]): PrometheusResult[] {
   return items.sort((a, b) => {
-    const earliestA = Math.min(...a.values.map((value) => value[0]));
-    const earliestB = Math.min(...b.values.map((value) => value[0]));
+    const earliestA = a.values.reduce((min, value) => (value[0] < min ? value[0] : min), Infinity);
+    const earliestB = b.values.reduce((min, value) => (value[0] < min ? value[0] : min), Infinity);
     return earliestA - earliestB;
   });
 }
