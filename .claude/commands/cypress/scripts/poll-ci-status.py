@@ -27,7 +27,7 @@ import sys
 def poll(pr, job_substring="e2e-incidents", max_attempts=30, interval=300):
     for attempt in range(max_attempts):
         result = subprocess.run(
-            ["gh", "pr", "checks", pr, "--json", "name,state,link"],
+            ["gh", "pr", "checks", pr, "--repo", "openshift/monitoring-plugin", "--json", "name,state,link"],
             capture_output=True,
             text=True,
         )
