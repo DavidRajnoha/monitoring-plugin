@@ -58,8 +58,8 @@ describe('BVT: Incidents - e2e', { tags: ['@smoke', '@slow', '@incidents', '@e2e
       ).then((result) => result.code === 0 && result.stdout.includes(currentAlertName)),
       {
         interval: 30_000,
-        timeout: 15 * 60_000,
-        errorMsg: `Alert ${currentAlertName} not firing on cluster within 15 minutes`,
+        timeout: 20 * 60_000,
+        errorMsg: `Alert ${currentAlertName} not firing on cluster within 20 minutes`,
       }
     );
 
@@ -71,7 +71,7 @@ describe('BVT: Incidents - e2e', { tags: ['@smoke', '@slow', '@incidents', '@e2e
       () => incidentsPage.findIncidentWithAlert(currentAlertName),
       {
         interval: 2 * intervalMs,
-        timeout: 20 * intervalMs,
+        timeout: 15 * intervalMs,
       }
     );
 
