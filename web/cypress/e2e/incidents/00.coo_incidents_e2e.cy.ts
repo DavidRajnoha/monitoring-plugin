@@ -41,16 +41,19 @@ describe('BVT: Incidents - e2e', { tags: ['@smoke', '@slow', '@incidents', '@e2e
     cy.log('1.1 Navigate to Incidents page and clear filters');
     incidentsPage.goTo();
     incidentsPage.clearAllFilters();
-    
-    const intervalMs = 60_000;
-    const maxMinutes = 30; 
 
     cy.log('1.2 Wait for incident with custom alert to appear');
+    // Use a 3-minute interval instead of 1-minute to reduce the number of
+    // heavy UI traversals. Each findIncidentWithAlert call generates hundreds
+    // of Cypress commands (clicking bars, expanding rows, checking text).
+    // With 1-min interval the command log grew unbounded over 30 iterations
+    // causing Chrome OOM (exit code 137). With 3-min interval we get ~10
+    // iterations max, keeping memory within container limits.
     cy.waitUntil(
       () => incidentsPage.findIncidentWithAlert(currentAlertName),
-      { 
-        interval: intervalMs, 
-        timeout: maxMinutes * intervalMs,
+      {
+        interval: 3 * 60_000,
+        timeout: 30 * 60_000,
       }
     );
 
