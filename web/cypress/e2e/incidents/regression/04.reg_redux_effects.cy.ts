@@ -33,6 +33,10 @@ const MP = {
 describe('Regression: Redux State Management', { tags: ['@incidents', '@incidents-redux'] }, () => {
   before(() => {
     cy.beforeBlockCOO(MCP, MP, { dashboards: false, troubleshootingPanel: false });
+    // Warm-up: navigate to Incidents page to ensure monitoring-console-plugin extensions
+    // are fully registered before beforeEach() runs. Without this, the plugin may not
+    // have loaded its tab extension yet after session restoration.
+    incidentsPage.goTo();
   });
 
   beforeEach(() => {
