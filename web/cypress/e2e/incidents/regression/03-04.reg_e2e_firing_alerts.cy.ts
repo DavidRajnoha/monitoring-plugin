@@ -49,7 +49,7 @@ describe('Regression: Time-Based Alert Resolution (E2E with Firing Alerts)', { t
   });
 
 
-  it('1. Section 3.3 - Alert not incorrectly marked as resolved after time passes', () => {
+  it('1. Section 3.3 - Alert not incorrectly marked as resolved after time passes', { tags: ['@e2e-real'] }, () => {
     cy.log('1.1 Navigate to Incidents page and clear filters');
     incidentsPage.goTo();
     cy.wait(10000);
@@ -161,7 +161,7 @@ describe('Regression: Time-Based Alert Resolution (E2E with Firing Alerts)', { t
     cy.log('Verified: Alert maintains firing state after time passes and reselection (end time = "---")');
   });
 
-  it('2. Section 4.7 - Prometheus query end time updates to current time on filter refresh', () => {
+  it('2. Section 4.7 - Prometheus query end time updates to current time on filter refresh', { tags: ['@e2e-real'] }, () => {
     cy.log('2.1 Navigate to Incidents page and clear filters');
     incidentsPage.goTo();
     cy.wait(10000);
@@ -263,7 +263,7 @@ describe('Regression: Time-Based Alert Resolution (E2E with Firing Alerts)', { t
     });
   });
 
-  it('3. Verify alert lifecycle - alert continues firing throughout test', () => {
+  it('3. Verify alert lifecycle - alert continues firing throughout test', { tags: ['@e2e-real'] }, () => {
     cy.log('3.1 Navigate to Incidents page');
     incidentsPage.goTo();
     cy.wait(10000);

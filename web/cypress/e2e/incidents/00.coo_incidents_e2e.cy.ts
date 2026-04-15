@@ -36,7 +36,7 @@ describe('BVT: Incidents - e2e', { tags: ['@smoke', '@slow', '@incidents', '@e2e
     });
   });
 
-  it('1. Admin perspective - Incidents page - Incident with custom alert lifecycle', () => {
+  it('1. Admin perspective - Incidents page - Incident with custom alert lifecycle', { tags: ['@e2e-real'] }, () => {
     cy.transformMetrics();
     cy.log('1.1 Navigate to Incidents page and clear filters');
     incidentsPage.goTo();
