@@ -35,6 +35,10 @@ describe('Regression: Stress Testing UI', { tags: ['@incidents'] }, () => {
 
   before(() => {
     cy.beforeBlockCOO(MCP, MP, { dashboards: false, troubleshootingPanel: false });
+    // Warm-up: navigate to Incidents page to ensure monitoring-console-plugin extensions
+    // are fully registered before beforeEach() runs. Without this, the plugin may not
+    // have loaded its tab extension yet after session restoration.
+    incidentsPage.goTo();
   });
 
   it('5.1 No excessive padding between chart top and alert bars for 100, 200, and 500 alerts', () => {
