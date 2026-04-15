@@ -201,6 +201,24 @@ export const incidentsPage = {
     incidentsPage.elements.daysSelectToggle().should('be.visible');
   },
 
+  // Used in before() hooks as a warm-up to ensure the monitoring-console-plugin has fully
+  // registered the Incidents tab extension before beforeEach() runs. Uses a 3-minute timeout
+  // instead of the default 80s, because plugin registration after session restoration can
+  // take 80-120 seconds when the console reloads its dynamic plugin manifest.
+  warmUpForPlugin: () => {
+    cy.log('incidentsPage.warmUpForPlugin: waiting for monitoring-console-plugin Incidents tab');
+    nav.sidenav.clickNavLink(['Observe', 'Alerting']);
+    // Wait up to 3 minutes for the Incidents tab to appear. Uses synchronous jQuery check
+    // inside cy.waitUntil() to avoid the 80s default command timeout, then uses
+    // nav.tabs.switchTab() which correctly clicks the button element (not the li wrapper).
+    cy.waitUntil(
+      () => Cypress.$('.pf-v6-c-tabs__item:contains("Incidents"), .co-m-horizontal-nav__menu-item:contains("Incidents")').length > 0,
+      { interval: 3000, timeout: 180000, errorMsg: 'Incidents tab not registered within 3 minutes' }
+    );
+    nav.tabs.switchTab('Incidents');
+    cy.get('[data-test="incidents-days-select-toggle"]', { timeout: 180000 }).should('be.visible');
+  },
+
   setDays: (value: '1 day' | '3 days' | '7 days' | '15 days') => {
     cy.log('incidentsPage.setDays');
     incidentsPage.elements.daysSelectToggle().scrollIntoView().click();
